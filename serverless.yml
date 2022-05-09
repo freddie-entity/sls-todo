@@ -64,8 +64,8 @@ provider:
 
 functions:
 
-  # Auth:
-  #   handler: src/lambda/auth/auth0Authorizer.handler
+  Auth:
+    handler: src/lambda/auth/auth0Authorizer.handler
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property for performing Actions on DynamoDB
@@ -76,11 +76,10 @@ functions:
           method: get
           path: todos
           cors: true
-          # authorizer: Auth
+          authorizer: Auth
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:Scan
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
@@ -96,9 +95,12 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
-          request:
-            schemas:
-              application/json: ${file(models/create-todo-model.json)}
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Create a new todo
+            description: Create a new todo
+            requestModel:
+              'application/json': CreateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -113,6 +115,14 @@ functions:
       - http:
           method: patch
           path: todos/{todoId}
+          authorizer: Auth
+          cors: true
+          reqValidatorName: RequestBodyValidator
+          documentation:
+            summary: Update a todo
+            description: Update a todo
+            requestModel:
+              'application/json': UpdateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -127,6 +137,8 @@ functions:
       - http:
           method: delete
           path: todos/{todoId}
+          authorizer: Auth
+          cors: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -188,11 +200,7 @@ resources:
 
     # TODO: Complete the bucket properties below. 
     # Do not forget to add the CorsConfiguration propoerty
-    # ImagesTopic:
-    #   Type: AWS::SNS::Topic
-    #   Properties:
-    #     DisplayName: Image bucket topic
-    #     TopicName: ${self:custom.topicName}
+
     AttachmentsBucket:
       Type: AWS::S3::Bucket
       Properties:
@@ -231,3 +239,12 @@ resources:
               Action: 's3:GetObject'
               Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
+    
+    RequestBodyValidator:
+      Type: AWS::ApiGateway::RequestValidator
+      Properties:
+        Name: 'request-body-validator'
+        RestApiId:
+          Ref: ApiGatewayRestApi
+        ValidateRequestBody: true
+        ValidateRequestParameters: false

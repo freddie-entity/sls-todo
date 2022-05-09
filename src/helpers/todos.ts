@@ -6,7 +6,6 @@ import { CreateTodoRequest } from '../requests/CreateTodoRequest'
 // import { createLogger } from '../utils/logger'
 import * as uuid from 'uuid'
 import { TodoUpdate } from '../models/TodoUpdate'
-import { parseUserId } from '../auth/utils'
 // import * as createError from 'http-errors'
 
 const todoAccess = new ToDoAccess()
@@ -17,12 +16,9 @@ export async function getToDos(userId: string): Promise<TodoItem[]> {
 
 export async function createToDo(
   createToDoRequest: CreateTodoRequest,
-  jwtToken: string
+  userId: string
 ): Promise<TodoItem> {
-
-  const itemId = uuid.v4()
-  const userId = parseUserId(jwtToken)
-
+  const itemId = uuid.v4();
   const newItem = {
     todoId: itemId,
     userId: userId,
@@ -35,10 +31,10 @@ export async function createToDo(
   return await todoAccess.createToDo(newItem)
 }
 
-export async function updateToDo(todoId: string, updatedTodo: TodoUpdate): Promise<TodoUpdate> {
-  return todoAccess.updateToDo(todoId, updatedTodo)
+export async function updateToDo(todoId: string, userId: string, updatedTodo: TodoUpdate): Promise<TodoUpdate> {
+  return todoAccess.updateToDo(todoId, userId, updatedTodo)
 }
 
-export async function deleteToDo(todoId: string): Promise<boolean> {
-  return todoAccess.deleteToDo(todoId)
+export async function deleteToDo(todoId: string, userId: string): Promise<boolean> {
+  return todoAccess.deleteToDo(todoId, userId)
 }

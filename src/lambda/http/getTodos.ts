@@ -5,14 +5,19 @@ import { cors } from 'middy/middlewares'
 
 // import { getTodosForUser as getTodosForUser } from '../../helper/todos'
 import { getToDos } from '../../helpers/todos'
-// import { getUserId } from '../utils';
+import { getUserId } from '../utils';
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('auth')
 
 // TODO: Get all TODO items for a current user
 export const handler = 
   middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
-    console.log('Processing event: ', event)
+    logger.info('Processing event: ', event)
   
-    const items = await getToDos(getJwtToken(event));
+    const items = await getToDos(getUserId(event));
+    
+    logger.info(items);
 
     return {
       statusCode: 200,

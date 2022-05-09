@@ -26,9 +26,12 @@ export class ToDoAccess {
 
         const result = await this.docClient.query({
             TableName: this.toDosTable,
-            KeyConditionExpression: 'userId = :userId',
+            KeyConditionExpression: '#userId =:userId',
+            ExpressionAttributeNames: {
+                '#userId': 'userId'
+            },
             ExpressionAttributeValues: {
-            ':userId': userId
+                ':userId': userId
             },
             ScanIndexForward: false
         }).promise()
@@ -46,12 +49,13 @@ export class ToDoAccess {
 
         return todo
     }
-    async updateToDo(todoId: string, todo: TodoUpdate): Promise<TodoUpdate> {
+    async updateToDo(todoId: string, userId: string, todo: TodoUpdate): Promise<TodoUpdate> {
 
         logger.info("Creating todo ", todo)
         await this.docClient.update({
             TableName: this.toDosTable,
             Key: {
+                userId: userId,
                 todoId: todoId
             },
             ExpressionAttributeNames: {
@@ -69,12 +73,13 @@ export class ToDoAccess {
 
         return todo
     }
-    async deleteToDo(todoId: string): Promise<boolean> {
+    async deleteToDo(todoId: string, userId: string): Promise<boolean> {
 
         logger.info("Deleting todo ", todoId)
         await this.docClient.delete({
         TableName: this.toDosTable,
         Key: {
+            userId: userId,
             todoId: todoId
         }
         }).promise()
