@@ -12,7 +12,7 @@ export const handler =
   middy(async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     console.log('Processing event: ', event)
   
-    const items = await getToDos();
+    const items = await getToDos(getJwtToken(event));
 
     return {
       statusCode: 200,

@@ -11,3 +11,9 @@ export function parseUserId(jwtToken: string): string {
   const decodedJwt = decode(jwtToken) as JwtPayload
   return decodedJwt.sub
 }
+
+export function getJwtToken(event) {
+  const authorization = event.headers.Authorization
+  const split = authorization.split(' ')
+  return split[1]
+}
