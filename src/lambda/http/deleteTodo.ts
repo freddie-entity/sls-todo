@@ -11,26 +11,39 @@ export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
     const todoId = event.pathParameters.todoId
     // TODO: Remove a TODO item by id
-    try {
-        const isDeleted = await deleteToDo(todoId, getUserId(event))
-        if (isDeleted)
-            return {
-                statusCode: 200,
-                body: JSON.stringify({
-                    message: `Deleted item with ID: ${todoId} of User ${getUserId(event)}`
-                })
-            }
-        
+    const isDeleted = await deleteToDo(todoId, getUserId(event))
+    if (isDeleted)
         return {
-            statusCode: 401,
-            body: `Error while deleting todo ID: ${todoId} of User ${getUserId(event)}`
+            statusCode: 200,
+            body: JSON.stringify({
+                message: `Deleted item with ID: ${todoId} of User ${getUserId(event)}`
+            })
         }
-    } catch (error) {   
-        return {
-            statusCode: 401,
-            body: "Error while deleting todo: " + JSON.stringify(error)
-        }
+    
+    return {
+        statusCode: 401,
+        body: `Error while deleting todo ID: ${todoId} of User ${getUserId(event)}`
     }
+    // try {
+    //     const isDeleted = await deleteToDo(todoId, getUserId(event))
+    //     if (isDeleted)
+    //         return {
+    //             statusCode: 200,
+    //             body: JSON.stringify({
+    //                 message: `Deleted item with ID: ${todoId} of User ${getUserId(event)}`
+    //             })
+    //         }
+        
+    //     return {
+    //         statusCode: 401,
+    //         body: `Error while deleting todo ID: ${todoId} of User ${getUserId(event)}`
+    //     }
+    // } catch (error) {   
+    //     return {
+    //         statusCode: 401,
+    //         body: "Error while deleting todo: " + JSON.stringify(error)
+    //     }
+    // }
   }
 )
 

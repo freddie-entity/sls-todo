@@ -25,7 +25,8 @@ export async function createToDo(
     name: createToDoRequest.name,
     dueDate: createToDoRequest.dueDate,
     done: false,
-    createdAt: new Date().toISOString()
+    createdAt: new Date().toISOString(),
+    attachmentUrl: `https://${bucketName}.s3.amazonaws.com/${todoId}`
   }
 
   return await todoAccess.createToDo(newItem)

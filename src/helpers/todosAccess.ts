@@ -60,6 +60,8 @@ export class ToDoAccess {
             },
             ExpressionAttributeNames: {
                 '#nameToDo': 'name',
+                '#dueDateToDo': 'dueDate',
+                '#doneToDo': 'done'
             },
             ExpressionAttributeValues: {
             ":name": todo.name,
@@ -67,8 +69,8 @@ export class ToDoAccess {
             ":done": todo.done
             },
             UpdateExpression:
-                "SET #nameToDo = :name, dueDate = :dueDate, done = :done",
-            ReturnValues: "ALL_NEW"
+                "SET #nameToDo = :name, #dueDateToDo = :dueDate, #doneToDo = :done",
+            ReturnValues: "UPDATED_NEW"
         }).promise()
 
         return todo
