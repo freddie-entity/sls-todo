@@ -6,9 +6,13 @@ import { cors, httpErrorHandler } from 'middy/middlewares'
 
 import { deleteToDo } from '../../helpers/todos'
 import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('ToDoDELETE')
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    logger.info('Processing event: ', event)
     const todoId = event.pathParameters.todoId
     // TODO: Remove a TODO item by id
     const isDeleted = await deleteToDo(todoId, getUserId(event))
@@ -21,7 +25,7 @@ export const handler = middy(
         }
     
     return {
-        statusCode: 401,
+        statusCode: 400,
         body: `Error while deleting todo ID: ${todoId} of User ${getUserId(event)}`
     }
     // try {

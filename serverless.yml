@@ -8,25 +8,25 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
   - serverless-reqvalidator-plugin
-  - serverless-aws-documentation
+  # - serverless-aws-documentation
 
 package:
   individually: true
 
-custom:
-  documentation:
-    api:
-      info:
-        version: v1.0.0
-        title: Serverless API
-        description: To-do serverless application 
-    models:
-      - name: CreateToDoRequest
-        contentType: application/json
-        schema: ${file(models/create-todo-model.json)}
-      - name: UpdateToDoRequest
-        contentType: application/json
-        schema: ${file(models/update-todo-model.json)}
+# custom:
+#   documentation:
+#     api:
+#       info:
+#         version: v1.0.0
+#         title: Serverless API
+#         description: To-do serverless application 
+#     models:
+#       - name: CreateToDoRequest
+#         contentType: application/json
+#         schema: ${file(models/create-todo-model.json)}
+#       - name: UpdateToDoRequest
+#         contentType: application/json
+#         schema: ${file(models/update-todo-model.json)}
 
 provider:
   name: aws
@@ -95,12 +95,15 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
-          reqValidatorName: RequestBodyValidator
-          documentation:
-            summary: Create a new todo
-            description: Create a new todo
-            requestModel:
-              'application/json': CreateTodoRequest
+          request:
+            schema:
+              application/json: ${file(src/requestModelJSON/create-todo-model.json)}
+          # reqValidatorName: RequestBodyValidator
+          # documentation:
+          #   summary: Create a new todo
+          #   description: Create a new todo
+          #   requestModel:
+          #     'application/json': CreateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -117,12 +120,15 @@ functions:
           path: todos/{todoId}
           authorizer: Auth
           cors: true
-          reqValidatorName: RequestBodyValidator
-          documentation:
-            summary: Update a todo
-            description: Update a todo
-            requestModel:
-              'application/json': UpdateTodoRequest
+          request:
+            schema:
+              application/json: ${file(src/requestModelJSON/update-todo-model.json)}
+          # reqValidatorName: RequestBodyValidator
+          # documentation:
+          #   summary: Update a todo
+          #   description: Update a todo
+          #   requestModel:
+          #     'application/json': UpdateTodoRequest
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -156,6 +162,10 @@ functions:
           cors: true
           authorizer: Auth
     iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
       - Effect: Allow
         Action:
           - s3:PutObject
@@ -248,11 +258,11 @@ resources:
               Resource: 'arn:aws:s3:::${self:provider.environment.ATTACHMENT_S3_BUCKET}/*'
         Bucket: !Ref AttachmentsBucket
     
-    RequestBodyValidator:
-      Type: AWS::ApiGateway::RequestValidator
-      Properties:
-        Name: 'request-body-validator'
-        RestApiId:
-          Ref: ApiGatewayRestApi
-        ValidateRequestBody: true
-        ValidateRequestParameters: false
+    # RequestBodyValidator:
+    #   Type: AWS::ApiGateway::RequestValidator
+    #   Properties:
+    #     Name: 'request-body-validator'
+    #     RestApiId:
+    #       Ref: ApiGatewayRestApi
+    #     ValidateRequestBody: true
+    #     ValidateRequestParameters: false

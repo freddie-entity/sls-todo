@@ -5,9 +5,13 @@ import { cors } from 'middy/middlewares'
 import { CreateTodoRequest } from '../../requests/CreateTodoRequest'
 import { createToDo } from '../../helpers/todos'
 import { getUserId } from '../utils'
+import { createLogger } from '../../utils/logger'
+
+const logger = createLogger('ToDoPOST')
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
+    logger.info('Processing event: ', event)
     const newTodo: CreateTodoRequest = JSON.parse(event.body)
 
     console.log(event)
@@ -16,14 +20,14 @@ export const handler = middy(
     try {
         const item = await createToDo(newTodo, getUserId(event))
         return {
-            statusCode: 200,
+            statusCode: 201,
             body: JSON.stringify({
                 newItem: item
             })
         }
     } catch (error) {   
         return {
-            statusCode: 401,
+            statusCode: 400,
             body: "Error while creating todo: " + JSON.stringify(error)
         }
     }

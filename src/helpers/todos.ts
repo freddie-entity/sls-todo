@@ -19,15 +19,15 @@ export async function createToDo(
   userId: string
 ): Promise<TodoItem> {
   const itemId = uuid.v4();
-  const bucketName = process.env.ATTACHMENT_S3_BUCKET;
+  // const bucketName = process.env.ATTACHMENT_S3_BUCKET;
   const newItem = {
     todoId: itemId,
     userId: userId,
     name: createToDoRequest.name,
     dueDate: createToDoRequest.dueDate,
     done: false,
-    createdAt: new Date().toISOString(),
-    attachmentUrl: `https://${bucketName}.s3.amazonaws.com/${itemId}`
+    createdAt: new Date().toISOString()
+    // attachmentUrl: `https://${bucketName}.s3.amazonaws.com/${itemId}`
   }
 
   return await todoAccess.createToDo(newItem)
