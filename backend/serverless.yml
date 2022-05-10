@@ -7,26 +7,26 @@ plugins:
   - serverless-webpack
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
-  - serverless-reqvalidator-plugin
-  # - serverless-aws-documentation
+  # - serverless-reqvalidator-plugin
+  - serverless-aws-documentation
 
 package:
   individually: true
 
-# custom:
-#   documentation:
-#     api:
-#       info:
-#         version: v1.0.0
-#         title: Serverless API
-#         description: To-do serverless application 
-#     models:
-#       - name: CreateToDoRequest
-#         contentType: application/json
-#         schema: ${file(models/create-todo-model.json)}
-#       - name: UpdateToDoRequest
-#         contentType: application/json
-#         schema: ${file(models/update-todo-model.json)}
+custom:
+  documentation:
+    api:
+      info:
+        version: v1.0.0
+        title: Serverless API
+        description: To-do serverless application 
+    # models:
+    #   - name: CreateToDoRequest
+    #     contentType: application/json
+    #     schema: ${file(models/create-todo-model.json)}
+    #   - name: UpdateToDoRequest
+    #     contentType: application/json
+    #     schema: ${file(models/update-todo-model.json)}
 
 provider:
   name: aws
@@ -47,19 +47,18 @@ provider:
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
     ATTACHMENT_S3_BUCKET: serverless-c4-todo-images-816436131251-${self:provider.stage}
     SIGNED_URL_EXPIRATION: 300
+    AUTH_0_JWKS_URL: https://dev-tp1uyfva.au.auth0.com/.well-known/jwks.json
 
   # logs:
   #   # Enable API Gateway logs
   #   restApi: true
 
-  iam:
-    role:
-      statements:
-        - Effect: Allow
-          Action:
-            - xray:PutTelemetryRecords
-            - xray:PutTraceSegments
-          Resource: "*"
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:PutTelemetryRecords
+        - xray:PutTraceSegments
+      Resource: "*"
 
 
 functions:
@@ -77,11 +76,16 @@ functions:
           path: todos
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
           - dynamodb:Query
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
+      - Effect: Allow
+        Action:
+          - dynamodb:Query
+        Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}/index/${self:provider.environment.TODOS_CREATED_AT_INDEX}
 
   # TODO: Configure this function - 
   # Provide iamRoleStatements property. Decide the Actions and AWS Resource. 
@@ -97,13 +101,14 @@ functions:
           authorizer: Auth
           request:
             schema:
-              application/json: ${file(src/requestModelJSON/create-todo-model.json)}
+              application/json: ${file(models/create-todo-model.json)}
           # reqValidatorName: RequestBodyValidator
           # documentation:
           #   summary: Create a new todo
           #   description: Create a new todo
           #   requestModel:
           #     'application/json': CreateTodoRequest
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -122,13 +127,14 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(src/requestModelJSON/update-todo-model.json)}
+              application/json: ${file(models/update-todo-model.json)}
           # reqValidatorName: RequestBodyValidator
           # documentation:
           #   summary: Update a todo
           #   description: Update a todo
           #   requestModel:
           #     'application/json': UpdateTodoRequest
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -145,6 +151,7 @@ functions:
           path: todos/{todoId}
           authorizer: Auth
           cors: true
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
@@ -161,6 +168,7 @@ functions:
           path: todos/{todoId}/attachment
           cors: true
           authorizer: Auth
+    iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
         Action:
