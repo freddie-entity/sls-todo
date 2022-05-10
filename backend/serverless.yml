@@ -7,25 +7,25 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
   # - serverless-reqvalidator-plugin
-  - serverless-aws-documentation
+  # - serverless-aws-documentation
 
 package:
   individually: true
 
-custom:
-  documentation:
-    api:
-      info:
-        version: v1.0.0
-        title: Serverless API
-        description: To-do serverless application 
-    # models:
-    #   - name: CreateToDoRequest
-    #     contentType: application/json
-    #     schema: ${file(models/create-todo-model.json)}
-    #   - name: UpdateToDoRequest
-    #     contentType: application/json
-    #     schema: ${file(models/update-todo-model.json)}
+# custom:
+#   documentation:
+#     api:
+#       info:
+#         version: v1.0.0
+#         title: Serverless API
+#         description: To-do serverless application 
+#     models:
+#       - name: CreateToDoRequest
+#         contentType: application/json
+#         schema: ${file(src/validators/create-todo-model.json)}
+#       - name: UpdateToDoRequest
+#         contentType: application/json
+#         schema: ${file(src/validators/update-todo-model.json)}
 
 provider:
   name: aws
@@ -39,8 +39,6 @@ provider:
     lambda: true
     apiGateway: true
 
-  # Use these variables in the functions and resouorces section below. For example, 
-  # ${self:provider.environment.ATTACHMENT_S3_BUCKET}
   environment:
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
@@ -100,7 +98,7 @@ functions:
           #   summary: Create a new todo
           #   description: Create a new todo
           #   requestModel:
-          #     'application/json': CreateTodoRequest
+          #     'application/json': CreateToDoRequest
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
@@ -125,7 +123,7 @@ functions:
           #   summary: Update a todo
           #   description: Update a todo
           #   requestModel:
-          #     'application/json': UpdateTodoRequest
+          #     'application/json': UpdateToDoRequest
     iamRoleStatementsInherit: true
     iamRoleStatements:
       - Effect: Allow
