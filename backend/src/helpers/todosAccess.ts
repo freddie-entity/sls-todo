@@ -9,7 +9,6 @@ const XAWS = AWSXRay.captureAWS(AWS)
 
 const logger = createLogger('TodosAccess')
 
-// TODO: Implement the dataLayer logic
 export class ToDoAccess {
     constructor(
         private readonly docClient: DocumentClient = createDynamoDBClient(),

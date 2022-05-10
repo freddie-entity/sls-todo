@@ -16,7 +16,7 @@ export const handler = middy(
     logger.info('Processing event: ', event)
     const todoId = event.pathParameters.todoId
     const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
-    // TODO: Update a TODO item with the provided id using values in the "updatedTodo" object
+
     try {
         await updateToDo(todoId, getUserId(event), updatedTodo)
         return {
