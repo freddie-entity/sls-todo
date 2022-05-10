@@ -101,7 +101,7 @@ functions:
           authorizer: Auth
           request:
             schema:
-              application/json: ${file(models/create-todo-model.json)}
+              application/json: ${file(src/validators/create-todo-model.json)}
           # reqValidatorName: RequestBodyValidator
           # documentation:
           #   summary: Create a new todo
@@ -127,7 +127,7 @@ functions:
           cors: true
           request:
             schema:
-              application/json: ${file(models/update-todo-model.json)}
+              application/json: ${file(src/validators/update-todo-model.json)}
           # reqValidatorName: RequestBodyValidator
           # documentation:
           #   summary: Update a todo
