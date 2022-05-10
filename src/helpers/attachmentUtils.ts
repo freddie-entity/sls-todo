@@ -1,6 +1,5 @@
 import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
-// import { DocumentClient } from 'aws-sdk/clients/dynamodb'
+const AWSXRay = require('aws-xray-sdk')
 const XAWS = AWSXRay.captureAWS(AWS)
 
 // TODO: Implement the fileStogare logic
@@ -8,8 +7,6 @@ const s3 = new XAWS.S3({
   signatureVersion: 'v4'
 })
 
-// const docClient: DocumentClient = createDynamoDBClient();
-// const toDosTable = process.env.TODOS_TABLE;
 const bucketName = process.env.ATTACHMENT_S3_BUCKET;
 const urlExpiration = process.env.SIGNED_URL_EXPIRATION;
 
@@ -38,6 +35,6 @@ export function getUploadUrl(todoId: string) {
 
 
 
-function createDynamoDBClient() {
-  return new XAWS.DynamoDB.DocumentClient()
-}
+// function createDynamoDBClient() {
+//   return new XAWS.DynamoDB.DocumentClient()
+// }
